@@ -2,196 +2,119 @@ import 'package:flutter/material.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
+
   final String nama = "Auriel Erich Ibrahim Nst";
   final String npm = "2406428806";
   final String kelas = "F";
 
-  final List<ItemHomepage> items = [
-    ItemHomepage("See Football News", Icons.newspaper),
-    ItemHomepage("Add News", Icons.add),
-    ItemHomepage("Logout", Icons.logout),
-  ];
-  @override
-    Widget build(BuildContext context) {
-    // Scaffold menyediakan struktur dasar halaman dengan AppBar dan body.
-    return Scaffold(
-      // AppBar adalah bagian atas halaman yang menampilkan judul.
-      appBar: AppBar(
-        // Judul aplikasi "Football News" dengan teks putih dan tebal.
-        title: const Text(
-          'Football News',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+  // Helper untuk menampilkan Snackbar agar tidak duplikat
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+  }
+
+  // Helper untuk membangun tombol menu (ikon + teks + warna + snackbar)
+  Widget _buildMenuButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required Color color,
+    required String snackMessage,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(icon),
+        label: Text(label),
+        onPressed: () {
+          _showSnackBar(context, snackMessage);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,        // warna tombol
+          foregroundColor: Colors.white, // warna teks & ikon
+          padding: const EdgeInsets.symmetric(vertical: 14.0),
+          textStyle: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        // Warna latar belakang AppBar diambil dari skema warna tema aplikasi.
-        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      // Body halaman dengan padding di sekelilingnya.
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Richshop'),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        // Menyusun widget secara vertikal dalam sebuah kolom.
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row untuk menampilkan 3 InfoCard secara horizontal.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InfoCard(title: 'NPM', content: npm),
-                InfoCard(title: 'Name', content: nama),
-                InfoCard(title: 'Class', content: kelas),
-              ],
-            ),
-
-            // Memberikan jarak vertikal 16 unit.
-            const SizedBox(height: 16.0),
-
-            // Menempatkan widget berikutnya di tengah halaman.
-            Center(
-              child: Column(
-                // Menyusun teks dan grid item secara vertikal.
-
-                children: [
-                  // Menampilkan teks sambutan dengan gaya tebal dan ukuran 18.
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      'Selamat datang di Football News',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ),
-
-                  // Grid untuk menampilkan ItemCard dalam bentuk grid 3 kolom.
-                  GridView.count(
-                    primary: true,
-                    padding: const EdgeInsets.all(20),
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 3,
-                    // Agar grid menyesuaikan tinggi kontennya.
-                    shrinkWrap: true,
-
-                    // Menampilkan ItemCard untuk setiap item dalam list items.
-                    children: items.map((ItemHomepage item) {
-                      return ItemCard(item);
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
-class ItemHomepage {
- final String name;
- final IconData icon;
-
- ItemHomepage(this.name, this.icon);
-}
-
-
-
-
-class ItemCard extends StatelessWidget {
-  // Menampilkan kartu dengan ikon dan nama.
-
-  final ItemHomepage item; 
-
-  const ItemCard(this.item, {super.key}); 
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      // Menentukan warna latar belakang dari tema aplikasi.
-      color: Theme.of(context).colorScheme.secondary,
-      // Membuat sudut kartu melengkung.
-      borderRadius: BorderRadius.circular(12),
-
-      child: InkWell(
-        // Aksi ketika kartu ditekan.
-        onTap: () {
-          // Menampilkan pesan SnackBar saat kartu ditekan.
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!"))
-            );
-        },
-        // Container untuk menyimpan Icon dan Text
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              // Menyusun ikon dan teks di tengah kartu.
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-}
-
-
-
-
-
-
-class InfoCard extends StatelessWidget {
-  // Kartu informasi yang menampilkan title dan content.
-
-  final String title;  // Judul kartu.
-  final String content;  // Isi kartu.
-
-  const InfoCard({super.key, required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      // Membuat kotak kartu dengan bayangan dibawahnya.
-      elevation: 2.0,
-      child: Container(
-        // Mengatur ukuran dan jarak di dalam kartu.
-        width: MediaQuery.of(context).size.width / 3.5, // menyesuaikan dengan lebar device yang digunakan.
-        padding: const EdgeInsets.all(16.0),
-        // Menyusun title dan content secara vertikal.
-        child: Column(
-          children: [
+            // ====== Header & identitas ======
             Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              'Selamat datang di Richshop!',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-            const SizedBox(height: 8.0),
-            Text(content),
+            const SizedBox(height: 16.0),
+            Text('Nama  : $nama'),
+            Text('NPM   : $npm'),
+            Text('Kelas : $kelas'),
+
+            const SizedBox(height: 24.0),
+
+            // ====== Judul menu tombol ======
+            Text(
+              'Menu Produk Richshop',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12.0),
+
+            // ====== Tombol 1: All Products (biru) ======
+            _buildMenuButton(
+              context: context,
+              icon: Icons.list_alt,
+              label: 'All Products',
+              color: Colors.blue, // biru
+              snackMessage: 'Kamu telah menekan tombol All Products',
+            ),
+            const SizedBox(height: 12.0),
+
+            // ====== Tombol 2: My Products (hijau) ======
+            _buildMenuButton(
+              context: context,
+              icon: Icons.shopping_bag,
+              label: 'My Products',
+              color: Colors.green, // hijau
+              snackMessage: 'Kamu telah menekan tombol My Products',
+            ),
+            const SizedBox(height: 12.0),
+
+            // ====== Tombol 3: Create Product (merah) ======
+            _buildMenuButton(
+              context: context,
+              icon: Icons.add_circle_outline,
+              label: 'Create Product',
+              color: Colors.red, // merah
+              snackMessage: 'Kamu telah menekan tombol Create Product',
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-
