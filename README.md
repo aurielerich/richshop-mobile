@@ -133,3 +133,106 @@ Pada proyek ini, `context` dipakai antara lain ketika memanggil `ScaffoldMesseng
 Singkatnya:
 - **Hot reload** → cepat, mempertahankan state, enak untuk eksperimen UI.  
 - **Hot restart** → memulai ulang aplikasi, menghapus seluruh state dan menjalankan ulang dari awal.
+
+
+
+## Tugas 8
+
+### 1. Perbedaan `Navigator.push()` dan `Navigator.pushReplacement()`
+
+`Navigator.push()` menambahkan (*push*) halaman baru ke atas tumpukan (*navigation stack*).  
+Halaman sebelumnya tetap berada di bawahnya sehingga pengguna masih bisa kembali dengan tombol *back*.
+
+`Navigator.pushReplacement()` menggantikan (*replace*) halaman saat ini dengan halaman baru.  
+Halaman yang digantikan dihapus dari stack sehingga pengguna **tidak** bisa kembali ke halaman tersebut dengan tombol *back*.
+
+Dalam konteks aplikasi Richshop (sebelumnya Football Shop):
+
+- `Navigator.push()` cocok digunakan ketika:
+  - Berpindah dari halaman menu utama ke halaman detail/form, dan kita **masih ingin mengizinkan** pengguna kembali ke halaman sebelumnya.
+  - Contoh: tombol **Create Product** yang membuka halaman form tambah produk baru. Pengguna masih boleh kembali ke halaman utama setelah melihat atau mengisi form.
+
+- `Navigator.pushReplacement()` cocok digunakan ketika:
+  - Halaman lama tidak lagi relevan setelah tindakan tertentu, sehingga **tidak perlu** bisa dikunjungi kembali.
+  - Contoh kasus umum (meskipun tidak diimplementasikan di tugas ini) adalah berpindah dari halaman **login** ke **home** setelah autentikasi berhasil, atau dari **splash screen** ke **home**. Kita tidak ingin pengguna kembali ke login/splash dengan tombol *back*.
+
+
+### 2. Pemanfaatan hierarki widget (`Scaffold`, `AppBar`, `Drawer`) untuk struktur halaman
+
+Hierarki widget membantu menjaga struktur halaman yang konsisten di seluruh aplikasi:
+
+- **`Scaffold`**  
+  Digunakan sebagai kerangka utama di setiap halaman (`MyHomePage` dan `AddProductPage`).  
+  `Scaffold` menyediakan area standar untuk:
+  - `appBar`
+  - `body`
+  - (opsional) `floatingActionButton`, `drawer`, `bottomNavigationBar`, dan lain-lain.  
+
+  Dengan menjadikan `Scaffold` sebagai parent di setiap halaman, tata letak aplikasi menjadi seragam dan mudah dikembangkan.
+
+- **`AppBar`**  
+  Ditempatkan di dalam `Scaffold` sebagai `appBar` pada kedua halaman.  
+  Fungsinya:
+  - Menampilkan judul halaman (misalnya “Richshop” dan “Tambah Produk Baru”).
+  - Menjadi titik orientasi pengguna sehingga mereka selalu tahu sedang berada di halaman apa.
+  - Menjaga konsistensi visual di bagian atas layar.
+
+- **`Drawer`**  
+  Pada tugas ini saya belum mengaktifkan `Drawer`, tetapi secara konsep:
+  - `Drawer` dapat digunakan di dalam `Scaffold` untuk menyediakan menu navigasi global (misalnya daftar kategori, profil, pengaturan).
+  - Dengan `Drawer`, struktur halaman tetap konsisten karena semua halaman tetap menggunakan pola `Scaffold + AppBar + Drawer`, hanya isi `body` yang berubah.
+
+Dengan memanfaatkan hierarki ini, tampilan aplikasi terasa terstruktur: ada kerangka yang sama, sementara konten di dalam `body` menyesuaikan kebutuhan tiap halaman.
+
+
+### 3. Kelebihan layout widget (`Padding`, `SingleChildScrollView`, `ListView`) dan contoh penggunaannya
+
+Layout widget membantu mengatur posisi dan perilaku elemen UI agar nyaman digunakan:
+
+- **`Padding`**
+  - Menambah jarak di sekitar widget sehingga elemen tidak “menempel” ke tepi layar.
+  - Di aplikasi:
+    - `Padding` digunakan pada `MyHomePage` dan `AddProductPage` untuk memberi jarak antara isi halaman dengan tepi layar.
+    - Hal ini membuat teks identitas dan form tambah produk lebih mudah dibaca dan terasa lega.
+
+- **`SingleChildScrollView`**
+  - Memungkinkan seluruh konten di-*scroll* walaupun dibangun menggunakan `Column`.
+  - Sangat penting untuk halaman form yang tinggi, agar tidak terjadi *overflow* di layar kecil.
+  - Di aplikasi:
+    - `AddProductPage` membungkus `Form` di dalam `SingleChildScrollView`.  
+      Ketika form tambah produk berisi banyak field, pengguna tetap bisa menggulir ke atas/bawah tanpa menimbulkan error overflow.
+
+- **`ListView`**
+  - Menyediakan tampilan daftar yang dapat di-*scroll* dan lebih efisien untuk banyak item.
+  - Cocok untuk menampilkan list produk, riwayat pesanan, atau daftar kategori.
+  - Pada tugas ini, list produk belum diimplementasikan, tetapi jika nanti Richshop menampilkan daftar “All Products” atau “My Products”, `ListView` akan menjadi pilihan utama karena:
+    - Mendukung *lazy loading*,
+    - Lebih fleksibel untuk item yang jumlahnya dinamis.
+
+Dengan mengkombinasikan `Padding`, `SingleChildScrollView`, dan (kelak) `ListView`, tampilan form dan halaman lain menjadi lebih responsif dan nyaman digunakan di berbagai ukuran layar.
+
+
+### 4. Penyesuaian warna tema agar konsisten dengan brand toko
+
+Warna tema membantu membangun identitas visual yang konsisten:
+
+- Di aplikasi Richshop saya menggunakan **`ThemeData`** dengan `ColorScheme.fromSeed(seedColor: Colors.blue)` sebagai dasar tema.
+- Warna utama (biru) dipakai secara konsisten untuk:
+  - `AppBar`,
+  - tombol utama (melalui `ElevatedButtonTheme`),
+  - elemen lain yang memerlukan aksen primer.
+
+Selain itu:
+
+- **Latar belakang** aplikasi dibuat sedikit abu-abu (`scaffoldBackgroundColor: Colors.grey[100]`) agar konten utama (Card, form, dan tombol) terlihat menonjol.
+- **Tombol menu** menggunakan variasi warna yang tetap selaras:
+  - Biru untuk **All Products**,
+  - Hijau untuk **My Products**,
+  - Merah untuk **Create Product**.  
+
+  Meskipun berbeda warna, gaya tombol (bentuk, ukuran font, dan radius) tetap konsisten melalui `ElevatedButtonTheme`, sehingga masih terasa sebagai bagian dari satu brand yang sama.
+
+Dengan cara ini, aplikasi memiliki:
+- Palet warna utama yang konsisten (brand Richshop),
+- Aksen warna yang terkontrol untuk membedakan fungsi tombol,
+- Tampilan yang rapi dan mudah dikenali sebagai satu identitas toko.
