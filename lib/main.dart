@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+
 import 'package:richshop/menu.dart';
 
 void main() {
-  runApp(const MyApp());
+  // Bungkus MyApp dengan Provider<CookieRequest>
+  runApp(
+    Provider<CookieRequest>(
+      create: (_) => CookieRequest(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -16,28 +25,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Richshop',
       theme: ThemeData(
-        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: seed),
+        useMaterial3: true,
         scaffoldBackgroundColor: Colors.grey[100],
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
+          backgroundColor: seed,
+          foregroundColor: Colors.white,
+          elevation: 0,
           centerTitle: true,
-          elevation: 1,
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1.4),
-          ),
-          labelStyle: TextStyle(fontSize: 14),
-          hintStyle: TextStyle(fontSize: 13, color: Colors.black54),
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
+            foregroundColor: Colors.white,
             textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
